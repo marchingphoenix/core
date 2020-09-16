@@ -478,6 +478,42 @@ def test_strptime(hass):
         assert template.Template(temp, hass).async_render() == str(expected)
 
 
+@pytest.mark.parametrize(
+    "timestring,days_offset,expected",
+    [
+        (
+            "strptime('2020-09-16T01:00:00.000000', '%Y-%m-%dT%H:%M:%S.%f')",
+            1,
+            datetime(
+                year=2020,
+                month=9,
+                day=17,
+                hour=1,
+                minute=0,
+                second=0,
+            ),
+        ),
+        (
+            "strptime('2020-09-16T01:00:00.000000', '%Y-%m-%dT%H:%M:%S.%f')",
+            -1,
+            datetime(
+                year=2020,
+                month=9,
+                day=15,
+                hour=1,
+                minute=0,
+                second=0,
+            ),
+        ),
+        ("'foo'", 1, "foo"),
+    ],
+)
+def test_dt_offset(hass, timestring, days_offset, expected):
+    """Test the dt_offset filter."""
+    temp = f"{{{{{timestring}|dt_offset(days={days_offset}) }}}}"
+    assert template.Template(temp, hass).async_render() == str(expected)
+
+
 def test_timestamp_custom(hass):
     """Test the timestamps to custom filter."""
     now = dt_util.utcnow()

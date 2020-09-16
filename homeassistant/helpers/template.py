@@ -912,6 +912,32 @@ def strptime(string, fmt):
         return string
 
 
+def dt_offset(
+    timestamp: datetime,
+    days=0,
+    seconds=0,
+    microseconds=0,
+    milliseconds=0,
+    minutes=0,
+    hours=0,
+    weeks=0,
+):
+    """Filter to offset datetime object by timedelta."""
+    try:
+        assert isinstance(timestamp, datetime)
+        return timestamp + timedelta(
+            days=days,
+            seconds=seconds,
+            microseconds=microseconds,
+            milliseconds=milliseconds,
+            minutes=minutes,
+            hours=hours,
+            weeks=weeks,
+        )
+    except (AssertionError, OverflowError):
+        return timestamp
+
+
 def fail_when_undefined(value):
     """Filter to force a failure when the value is undefined."""
     if isinstance(value, jinja2.Undefined):
@@ -1059,6 +1085,7 @@ class TemplateEnvironment(ImmutableSandboxedEnvironment):
         self.filters["timestamp_custom"] = timestamp_custom
         self.filters["timestamp_local"] = timestamp_local
         self.filters["timestamp_utc"] = timestamp_utc
+        self.filters["dt_offset"] = dt_offset
         self.filters["to_json"] = to_json
         self.filters["from_json"] = from_json
         self.filters["is_defined"] = fail_when_undefined
